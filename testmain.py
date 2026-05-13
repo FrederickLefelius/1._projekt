@@ -21,7 +21,7 @@ def do_connect():
             print('Tilsluttet til WiFi!')
             ip_result = subprocess.run(  # Kører en ny kommando for at hente Pi'ens IP-adresse
                 ['hostname', '-I'],  # Kommandoen der henter IP-adressen
-                capture_output=True,  # Fanger outputtet fra kommandoen
+                capture_output=True,
                 text=True
             )
             print('IP-adresse:', ip_result.stdout)  # Udskriver IP-adressen 
