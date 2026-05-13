@@ -1,6 +1,6 @@
 # Denne fil eksistere kun som en backup af løsningens pir sensor funktion.
 
-''' import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
  
 # Opæstning af anvendt Pin
@@ -27,4 +27,4 @@ except KeyboardInterrupt:
     print("\nLukker programmet.")
  
 finally:
-    GPIO.cleanup()'''
+    GPIO.cleanup()
