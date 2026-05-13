@@ -45,7 +45,7 @@ checkNet = subprocess.run(  # Basically den samme som tidligere, bortset fra at 
             text=True,
             timeout=15
         )
-if 'connected' in checkNet.stdout.lower: # Checker om der er forbindelse via den "checkNet" funktionen,
+if 'connected' in checkNet.stdout.lower(): # Checker om der er forbindelse via den "checkNet" funktionen,
                                          # og udfører "do_connect" hvis der ikke er forbindelse.
     print('Du er allerede forbundet til internettet!')
 else:
