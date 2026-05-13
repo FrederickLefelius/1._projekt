@@ -31,7 +31,7 @@ def do_connect():
             )
             print('IP-adresse:', ip_result.stdout)  # Udskriver IP-adressen.
         else:
-            print('Kunne ikke tilslutte til WiFi:', result.stderr)  # Udskriver fejlbeskeden fra nmcli hvis tilslutningen fejlede.
+            print('Kunne ikke tilslutte til WiFi:', connect.stderr)  # Udskriver fejlbeskeden fra nmcli hvis tilslutningen fejlede.
 
     except subprocess.TimeoutExpired:  # Fanger den specifikke fejl hvor de 15 sekunder løb ud.
         print('Forbindelsen tog for lang tid — prøv igen.')
