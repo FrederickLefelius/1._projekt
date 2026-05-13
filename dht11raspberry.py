@@ -18,6 +18,9 @@ def turn_on_fan():
 def turn_off_fan():
       print("slukker for ventilator")
       # kode slukningen af ventilator
+def close_window():
+    print("lukker vindue...")
+    # kode der lukker vinduet 
 
 # read data using pin 14
 instance = dht11.DHT11(pin =4)
