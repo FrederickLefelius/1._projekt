@@ -21,9 +21,8 @@ def turn_off_fan():
 
 # read data using pin 14
 instance = dht11.DHT11(pin =4)
-result = instance.read()
 while True:
-
+result = instance.read()
     if result.is_valid():
         print("Temperature: %-3.1f C" % result.temperature)
         if result.temperature > 24 or result.humidity > 60:
