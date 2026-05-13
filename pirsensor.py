@@ -13,7 +13,7 @@ GPIO.setmode(GPIO.BCM) ### Denne linje indstiller pin nummereringssystemet, som 
                        som bare refererer til pins efter deres fysiske position på f.eks. Educaboard ###
 GPIO.setup(PIR_PIN, GPIO.IN)
  
-print("PIR Sensor klar! Afventer bevægelse...")
+print("PIR Sensor klar! Afventer bevægelse.")
  
 try:
     while True:
@@ -24,7 +24,7 @@ try:
         time.sleep(0.5)
  
 except KeyboardInterrupt:
-    print("\nLukker programmet...")
+    print("\nLukker programmet.")
  
 finally:
     GPIO.cleanup()'''
