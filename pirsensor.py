@@ -18,7 +18,7 @@ print("PIR Sensor klar! Afventer bevægelse.")
 try:
     while True:
         if GPIO.input(PIR_PIN):
-            print("Bevægelse påvist!")
+            print("Bevægelse!")
         else:
             print("Intet bevægelse.")
         time.sleep(0.5)
