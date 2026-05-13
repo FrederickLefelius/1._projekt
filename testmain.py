@@ -42,7 +42,7 @@ checkNet = subprocess.run(  # Basically den samme som tidligere, bortset fra at 
                             # den tjekker kun status på den nuværende forbindelse.
             ['nmcli', '-t', '-f', 'GENERAL.CONNECTION', 'device', 'show'],  # -t (Terse) fjerner ligegyldig info - f.eks. den ekstra linje "STATE".
                                                                             # -f (Field) skriver kun dét, den bedes om - i dette tilfælde, får vi
-                                                                            # kun 1 linjer på forbundet netærk, som skriver: 
+                                                                            # kun 1 linje per forbundet netærk, som eksemeplvis skriver: 
                                                                             # "GENERAL.CONNECTION:<indtastet ssid>". Dette kan vi bruge til at tjekke
                                                                             # om enheden er forbundet på det ønskede netværk.
             capture_output=True,
