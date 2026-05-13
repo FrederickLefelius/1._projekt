@@ -40,14 +40,17 @@ def do_connect():
 
 checkNet = subprocess.run(  # Basically den samme som tidligere, bortset fra at den ikke indstiller noget,
                             # den tjekker kun status på den nuværende forbindelse.
-            ['nmcli', '-t', '-f', 'GENERAL.CONNECTION', 'device', 'show'],
+            ['nmcli', '-t', '-f', 'GENERAL.CONNECTION', 'device', 'show'],  # -t (Terse) fjerner ligegyldig info - f.eks. den ekstra linje "STATE".
+                                                                            # -f (Field) skriver kun dét, den bedes om - i dette tilfælde, får vi
+                                                                            # kun 1 linjer på forbundet netærk, som skriver: 
+                                                                            # "GENERAL.CONNECTION:<indtastet ssid>". Dette kan vi bruge til at tjekke
+                                                                            # om enheden er forbundet på det ønskede netværk.
             capture_output=True,
             text=True,
             timeout=15
         )
 if ssid.lower() in checkNet.stdout.lower(): # Checker om der er forbindelse via den "checkNet" funktionen,
-                                         # og udfører "do_connect" hvis der ikke er forbindelse til det
-                                         # indtastede "ssid".
+                                         # og udfører "do_connect" hvis der ikke er forbindelse.
     print('Du er allerede forbundet til internettet!')
 else:
     print('Du er ikke forbundet til det rigtige netværk, det bliver du nu.')
