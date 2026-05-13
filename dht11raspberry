@@ -1,0 +1,36 @@
+import RPi.GPIO as GPIO
+import dht11
+from time import sleep
+
+Opsætning af gpio 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
+
+
+def open_window():
+    print("Åbner vindue...")
+    # Her skal der tilføjes kode for at åbne vindue (stepper motor)
+
+def turn_on_fan():
+    print("Tænder for ventilator...")
+    # Her skal der tilføjes kode for at tænde for ventilator (GPIO output)
+def turn_off_fan():
+      print("slukker for ventilator")
+      # kode slukningen af ventilator
+
+# read data using pin 14
+instance = dht11.DHT11(pin =4)
+result = instance.read()
+while True:
+
+    if result.is_valid():
+        print("Temperature: %-3.1f C" % result.temperature)
+        if result.temperature > 24 or result.humidity > 60:
+            print("Temperature or humidity is too high, opening window...")
+            open_window()
+        print("Humidity: %-3.1f %%" % result.humidity)
+      
+    else:
+        print("Error: %d" % result.error_code)
+    sleep(1)
