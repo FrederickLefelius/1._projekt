@@ -14,9 +14,9 @@ while True:
     
     # Indsæt flask-kode imellem disse 2 kommentarer
     
-    get_humTemp()
+    hum, temp = get_humTemp()
     
-    if smoke_detected = True:
+    if smoke_detected == True:
       print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
       close_window()
       turn_off_fan()
@@ -26,7 +26,7 @@ while True:
         print("Høj fugtighed, åbner vindue.")
         open_window()
         
-      elif temp >= 30 && hum >= 60:
+      elif temp >= 30 and hum >= 60:
         print("Abnormale forhold, åbner vindue og tænder blæser.")
         open_window()
         turn_on_fan()
@@ -42,7 +42,8 @@ while True:
       else:
         print("Sensorfejl:", result.error_code)
   
-  
+    pir_setup()
+    
   except KeyboardInterrupt:
       print("Program afbrudt, lukker ned.")
   except Exception as e:
