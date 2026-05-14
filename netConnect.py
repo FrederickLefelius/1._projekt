@@ -1,5 +1,3 @@
-# Denne fil er til aftestning af alt kode sammenlagt - når denne virker efter hensigten, bliver den vores main.py, som skal køre kontinuerligt
-
 import subprocess # Denne er åbenbart yderst nødvendig for raspberry pi ift. f.eks. at komme på nettet,
                   # da det er den class der gør det muligt at bruge Linux systemkommandoer.
 import time 
