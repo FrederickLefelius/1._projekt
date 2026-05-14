@@ -45,13 +45,13 @@ class Stepper:
 stepper = Stepper(pins=[18, 17, 16, 19])
 #husk man kan skifte pins her___
 
-BLÆSER_PIN = 23
-GPIO.setup(BLÆSER_PIN, GPIO.OUT)
-GPIO.output(BLÆSER_PIN, 0)
+fan_pin = 23
+GPIO.setup(fan_pin, GPIO.OUT)
+GPIO.output(fan_pin, 0)
 
 #Funktioner til vindue og blæser
 window_open = False
-blæser_on = False
+fan_on = False
 
 def open_window():
     print("Åbner vindue")
@@ -72,12 +72,12 @@ def close_window():
 
 def turn_on_fan():
     print("Tænder blæser")
-    GPIO.output(BLÆSER_PIN, 1)
+    GPIO.output(fan_pin, 1)
     fan_on = True
 
 def turn_off_fan():
     print("Slukker blæser")
-    GPIO.output(BLÆSER_PIN, 0)
+    GPIO.output(fan_pin, 0)
     fan_on = False
 
 sensor = dht11.DHT11(pin=14)
