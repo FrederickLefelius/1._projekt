@@ -5,8 +5,8 @@ import time
  
 # Opsætning af GPIO
 def pir_sensor:
- PIR_pin = 27  # På Educaboard
- GPIO.setup(PIR_PIN, GPIO.IN) # Sådan indstilles Pins gennem GPIO - i dette tilfælde, opsættes pin 27 til 
+ pir_pin = 27  # På Educaboard
+ GPIO.setup(pir_pin, GPIO.IN) # Sådan indstilles Pins gennem GPIO - i dette tilfælde, opsættes pin 27 til 
                               # aflæsning ("GPIO.IN") 
  print("PIR Sensor klar! Afventer bevægelse.")
  
