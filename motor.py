@@ -70,15 +70,15 @@ def close_window():
     stepper.stop()
     window_open = False
 
-def turn_on_blæser():
+def turn_on_fan():
     print("Tænder blæser")
     GPIO.output(BLÆSER_PIN, 1)
-    blæser_on = True
+    fan_on = True
 
-def turn_off_blæser():
+def turn_off_fan():
     print("Slukker blæser")
     GPIO.output(BLÆSER_PIN, 0)
-    blæser_on = False
+    fan_on = False
 
 sensor = dht11.DHT11(pin=14)
 
@@ -93,26 +93,34 @@ while True:
         
         if temp > 24: #or hum > 60:
             print("For varmt, starter blæser")
-            #open_window()
-            turn_on_blæser()
-            #window_open = True
+            turn_on_fan()
         
         elif temp >= 30 && hum >= 60:
-            print("Abnormale forhold, åbner vindue og tænder blæser")
+            print("Abnormale forhold, åbner vindue og tænder blæser.")
             open_window()
-            turn_on_blæser()
-            window_open = True
+            turn_on_fan()
             
         elif hum >= 60:
             print("Høj fugtighed, åbner vindue.")
             open_window()
-            window_open = True
             
         elif smoke_detected = True:
-            print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+            print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER ØJEBLIKKELIGT")
             close_window()
-            turn_off_blæser()
-            window_open = False
+            turn_off_fan()
+            
+        elif temp < 24:
+            print("Acceptabel temperatur opnået, slukker blæser.")
+            turn_off_fan()
+            
+        elif hum < 60:
+            print("Acceptabel luftfugtighed opnået, lukker vindue.")
+            close_window()
+            
+        elif temp < 30 && hum < 60:
+            print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
+            close_window()
+            turn_off_fan()
     else:
         print("Sensorfejl:", result.error_code)
     sleep(2)
