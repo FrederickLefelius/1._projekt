@@ -1,10 +1,12 @@
 from motor import open_window, close_window, turn_on_fan, turn_off_fan
 from humTemp import get_humTemp
 from netConnect import do_connect
-from pirsensor import pir_setup
+from pirsensor import pir_setup, read_pir
 from time import sleep
 import RPi.GPIO as GPIO
 import time
+
+GPIO.setmode(GPIO.BCM)
 
 while True:
   try:
