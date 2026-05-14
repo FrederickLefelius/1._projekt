@@ -87,7 +87,8 @@ sensor = dht11.DHT11(pin=14)
 
 
 while True:
-    result = sensor.read()
+    result = sensor.read() # Husk at vi lige skal rette navnet på variablen her, så den matcher dem der kommer fra
+    # andre filer.
 
     if result.is_valid():
         temp = result.temperature
@@ -96,15 +97,30 @@ while True:
         print(f"Temperature: {temp:.1f} C")
         print(f"Humidity: {hum:.1f} %")
 
-        if temp > 24 or hum > 60:
-            print("For varmt eller fugtigt, åbner vindue og starter blæser")
+        window_open = False
+        
+        if temp > 24: #or hum > 60:
+            print("For varmt, starter blæser")
+            #open_window()
+            turn_on_blæser()
+            #window_open = True 
+
+        elif temp >= 30 && hum >= 60:
+            print("Abnormale forhold, åbner vindue og tænder blæser")
             open_window()
             turn_on_blæser()
+            window_open = True
+            
+        elif hum >= 60:
+            print("Høj fugtighed, åbner vindue.")
+            open_window()
+            window_open = True
 
-        else:
-            print("Normale forhold, lukker vindue og slukker blæser")
+        elif smoke_detected = True:
+            print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
             close_window()
             turn_off_blæser()
+            window_open = False
 
     else:
         print("Sensorfejl:", result.error_code)
