@@ -45,9 +45,10 @@ class Stepper:
 stepper = Stepper(pins=[18, 17, 16, 19])
 #husk man kan skifte pins her___
 
-fan_pin = 23
-GPIO.setup(fan_pin, GPIO.OUT)
-GPIO.output(fan_pin, 0)
+def fan_setup():
+    fan_pin = 23
+    GPIO.setup(fan_pin, GPIO.OUT)
+    GPIO.output(fan_pin, 0)
 
 #Funktioner til vindue og blæser
 window_open = False
