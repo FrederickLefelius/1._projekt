@@ -5,3 +5,13 @@ from time import sleep
 import RPi.GPIO as GPIO
 import time
 
+while True:
+  try:
+    if smoke_detected = True:
+      
+  except KeyboardInterrupt:
+      print("Program afbrudt, lukker ned.")
+  except Exception as e:
+      print(f"Fejl opstod: {e}")
+  finally:
+GPIO.cleanup()
