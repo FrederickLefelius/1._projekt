@@ -2,37 +2,22 @@ import RPi.GPIO as GPIO
 import dht11
 from time import sleep
 
-Opsætning af gpio 
+# Opsætning af gpio 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.cleanup()
 
+# Oprettelse af funktion til temperatur og fugtighedsmåling
+def get_humTemp():
+    dhtData = dht11.DHT11(pin=14)
 
-def open_window():
-    print("Åbner vindue...")
-    # Her skal der tilføjes kode for at åbne vindue (stepper motor)
+    humTemp = dhtData.read()
 
-def turn_on_fan():
-    print("Tænder for ventilator...")
-    # Her skal der tilføjes kode for at tænde for ventilator (GPIO output)
-def turn_off_fan():
-      print("slukker for ventilator")
-      # kode slukningen af ventilator
-def close_window():
-    print("lukker vindue...")
-    # kode der lukker vinduet 
-
-# read data using pin 14
-instance = dht11.DHT11(pin =4)
-while True:
-result = instance.read()
-    if result.is_valid():
-        print("Temperature: %-3.1f C" % result.temperature)
-        if result.temperature > 24 or result.humidity > 60:
-            print("Temperature or humidity is too high, opening window...")
-            open_window()
-        print("Humidity: %-3.1f %%" % result.humidity)
-      
+    if humTemp.is_valid():
+        temp = humTemp.temperature
+        hum = humTemp.humidity
+        print(f"Temperatur: ", temp)
+        print("Fugtighed: ", hum)
+        return hum, temp
     else:
-        print("Error: %d" % result.error_code)
-    sleep(1)
+        print("Input fra DHT11 ikke valideret, prøv igen.")
