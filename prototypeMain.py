@@ -7,14 +7,17 @@ import RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)
+pir_setup()
+
+smoke_detected = None
+
+do_connect()
 
 while True:
   try:
-    do_connect()
-  
-    # Indsæt flask-kode imellem disse 2 kommentarer
+    # Indsæt flask-kode imellem disse 2 kommentarer - skal måske op under do_connect()
     
-    # Indsæt flask-kode imellem disse 2 kommentarer
+    # Indsæt flask-kode imellem disse 2 kommentarer - skal måske op under do_connect()
     
     hum, temp = get_humTemp()
     
@@ -22,7 +25,7 @@ while True:
       print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
       close_window()
       turn_off_fan()
-      smoke_alarm()
+      #smoke_alarm()
     else:
       if hum >= 60:
         print("Høj fugtighed, åbner vindue.")
@@ -37,14 +40,12 @@ while True:
         print("Acceptabel luftfugtighed opnået, lukker vindue.")
         close_window()
             
-      elif temp < 30 && hum < 60:
+      elif temp < 30 and hum < 60:
         print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
         close_window()
         turn_off_fan()
       else:
         print("Sensorfejl:", result.error_code)
-  
-    pir_setup()
     
   except KeyboardInterrupt:
       print("Program afbrudt, lukker ned.")
