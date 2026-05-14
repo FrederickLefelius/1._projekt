@@ -8,7 +8,7 @@ import time
 while True:
   try:
     do_connect()
-
+  
     # Indsæt flask-kode imellem disse 2 kommentarer
     
     # Indsæt flask-kode imellem disse 2 kommentarer
@@ -21,22 +21,14 @@ while True:
       turn_off_fan()
       smoke_alarm()
     else:
-      if temp > 24: #or hum > 60:
-        print("For varmt, starter blæser")
-        turn_on_fan()
+      if hum >= 60:
+        print("Høj fugtighed, åbner vindue.")
+        open_window()
         
       elif temp >= 30 && hum >= 60:
         print("Abnormale forhold, åbner vindue og tænder blæser.")
         open_window()
         turn_on_fan()
-            
-      elif hum >= 60:
-        print("Høj fugtighed, åbner vindue.")
-        open_window()
-            
-      elif temp < 24:
-        print("Acceptabel temperatur opnået, slukker blæser.")
-        turn_off_fan()
             
       elif hum < 60:
         print("Acceptabel luftfugtighed opnået, lukker vindue.")
@@ -48,7 +40,8 @@ while True:
         turn_off_fan()
       else:
         print("Sensorfejl:", result.error_code)
-        
+  
+  
   except KeyboardInterrupt:
       print("Program afbrudt, lukker ned.")
   except Exception as e:
