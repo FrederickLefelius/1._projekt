@@ -19,7 +19,7 @@ print("PIR Sensor klar! Afventer bevægelse.")
  
 try:
     while True:
-        if GPIO.input(PIR_PIN):
+        if GPIO.input(pir_pin):
             print("Bevægelse!")
         else:
             print("Intet bevægelse.")
