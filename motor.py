@@ -6,7 +6,6 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 #Stepper motor pins
-
 class Stepper:
     def __init__(self, pins, delay=0.002):
         self.pins = pins
@@ -28,22 +27,19 @@ class Stepper:
             [0,0,0,1],
             [1,0,0,1]
         ]
-
     def step(self, steps, direction=1):
         #  når = 1 åbner vindue
         # når = -1 lukker vindue
         seq = self.sequence if direction == 1 else self.sequence[::-1]
-
         for _ in range(steps):
             for pattern in seq:
                 for pin, val in zip(self.pins, pattern):
                     GPIO.output(pin, val)
                 sleep(self.delay)
-
+    
     def stop(self):
         for p in self.pins:
             GPIO.output(p, 0)
-
 
 #Starter stepper
 stepper = Stepper(pins=[18, 17, 16, 19])
@@ -53,8 +49,9 @@ BLÆSER_PIN = 23
 GPIO.setup(BLÆSER_PIN, GPIO.OUT)
 GPIO.output(BLÆSER_PIN, 0)
 
-
 #Funktioner til vindue og blæser
+window_open = False
+blæser_on = False
 
 def open_window():
     print("Åbner vindue")
@@ -65,46 +62,41 @@ def open_window():
     #4096 steps = fuld rotation
     stepper.step(steps=1200, direction=1)
     stepper.stop()
-
+    window_open = True
 
 def close_window():
     print("Lukker vindue")
     stepper.step(steps=1200, direction=-1)
     stepper.stop()
-
+    window_open = False
 
 def turn_on_blæser():
     print("Tænder blæser")
     GPIO.output(BLÆSER_PIN, 1)
-
+    blæser_on = True
 
 def turn_off_blæser():
     print("Slukker blæser")
     GPIO.output(BLÆSER_PIN, 0)
-
+    blæser_on = False
 
 sensor = dht11.DHT11(pin=14)
-
 
 while True:
     result = sensor.read() # Husk at vi lige skal rette navnet på variablen her, så den matcher dem der kommer fra
     # andre filer.
-
     if result.is_valid():
         temp = result.temperature
         hum = result.humidity
-
         print(f"Temperature: {temp:.1f} C")
-        print(f"Humidity: {hum:.1f} %")
-
-        window_open = False
+        print(f"Humidity: {hum:.1f} %") 
         
         if temp > 24: #or hum > 60:
             print("For varmt, starter blæser")
             #open_window()
             turn_on_blæser()
-            #window_open = True 
-
+            #window_open = True
+        
         elif temp >= 30 && hum >= 60:
             print("Abnormale forhold, åbner vindue og tænder blæser")
             open_window()
@@ -115,14 +107,12 @@ while True:
             print("Høj fugtighed, åbner vindue.")
             open_window()
             window_open = True
-
+            
         elif smoke_detected = True:
             print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
             close_window()
             turn_off_blæser()
             window_open = False
-
     else:
         print("Sensorfejl:", result.error_code)
-
     sleep(2)
