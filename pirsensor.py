@@ -4,6 +4,8 @@ import RPi.GPIO as GPIO
 import time
  
 # Opsætning af GPIO
+pir_pin = 27
+
 def pir_setup():
  pir_pin = 27  # På Educaboard
  GPIO.setup(pir_pin, GPIO.IN) # Sådan indstilles Pins gennem GPIO - i dette tilfælde, opsættes pin 27 til 
