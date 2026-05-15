@@ -27,30 +27,28 @@ try:
     #temp = int(temp)
     
     if smoke_detected == True:
-    print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
-    close_window()
-    turn_off_fan()
-    # smoke_alarm()
-
-else:
+      print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+      close_window()
+      turn_off_fan()
+    else:
     # --- Blæser kontrol ---
-    if temp >= 24 and fan_on == False:
+      if temp >= 24 and fan_on == False:
         print("Høj temperatur, tænder blæser.")
         turn_on_fan()
-    elif temp < 24 and fan_on == True:
+      elif temp < 24 and fan_on == True:
         print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan()
-
+        
     # --- Vindue kontrol ---
-    if hum >= 60 and window_open == False:
+      if hum >= 60 and window_open == False:
         print("Høj fugtighed, åbner vindue.")
         open_window()
-    elif hum < 60 and window_open == True:
+      elif hum < 60 and window_open == True:
         print("Acceptabel luftfugtighed opnået, lukker vindue.")
         close_window()
 
     # --- Status Besked ---
-    if fan_on == False and window_open == False and temp < 24 and hum < 60:
+      if fan_on == False and window_open == False and temp < 24 and hum < 60:
         print("Forhold er optimale, ingen handling påkrævet.")
       
 # Jeg har forsøgt at planlægge fremad ift. at der stadig er noget kode vi mangler - som f.eks. Yolo og kamera.
@@ -84,7 +82,7 @@ else:
                     ### camera.stop()
                     camera_active = False
                     motion_timer = None
-        sleep(0.5)  #  Denne sættes til 0.5 sekunder for at få repsons fra pir sensoren hurtigere.
+    sleep(0.5)  #  Denne sættes til 0.5 sekunder for at få repsons fra pir sensoren hurtigere.
 
 
 except KeyboardInterrupt:
