@@ -15,7 +15,6 @@ smoke_detected = None
 horse_down_counter = 0
 horse_was_laying = False
 camera_active = False
-
 motion_timer = None
 
 try:
@@ -33,29 +32,29 @@ try:
       turn_off_fan()
       #smoke_alarm()
     else:
-      if temp >= 30 and hum >= 70:
+      if temp >= 30 and hum >= 70 and fan_on == False and window_open == False:
         print("Abnormale forhold, åbner vindue og tænder blæser.")
         open_window()
         turn_on_fan()
         
-      elif temp >= 24:
+      elif temp >= 24 and fan_on == False:
         print("Høj temperatur, tænder blæser.")
         turn_on_fan()
         
-      elif hum >= 60:
+      elif hum >= 60 and window_open == False:
         print("Høj fugtighed, åbner vindue.")
         open_window()
             
-      elif hum < 60 and temp < 30:
+      elif hum < 60 and temp < 30 and fan_on == True and window_open == True:
         print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
         close_window()
         turn_off_fan()
         
-      elif temp < 24:
+      elif temp < 24 and fan_on == True:
         print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan()
         
-      elif hum < 60:
+      elif hum < 60 and window_open == True:
         print("Acceptabel luftfugtighed opnået, lukker vindue.")
         close_window()
         
