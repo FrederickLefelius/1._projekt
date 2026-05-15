@@ -38,7 +38,8 @@ try:
         turn_on_fan()
         
       elif temp >= 24:
-        print("Høj temperatur, ")
+        print("Høj temperatur, tænder blæser.")
+        turn_on_fan()
         
       elif hum >= 60:
         print("Høj fugtighed, åbner vindue.")
@@ -47,6 +48,10 @@ try:
       elif hum < 60 and temp < 30:
         print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
         close_window()
+        turn_off_fan()
+        
+      elif temp < 24:
+        print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan()
         
       elif hum < 60:
