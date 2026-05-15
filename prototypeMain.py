@@ -27,39 +27,31 @@ try:
     #temp = int(temp)
     
     if smoke_detected == True:
-      print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
-      close_window()
-      turn_off_fan()
-      #smoke_alarm()
-    else:
-      if temp >= 30 and hum >= 70 and fan_on == False and window_open == False:
-        print("Abnormale forhold, åbner vindue og tænder blæser.")
-        open_window()
-        turn_on_fan()
-        
-      elif temp >= 24 and fan_on == False:
+    print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+    close_window()
+    turn_off_fan()
+    # smoke_alarm()
+
+else:
+    # --- Blæser kontrol ---
+    if temp >= 24 and fan_on == False:
         print("Høj temperatur, tænder blæser.")
         turn_on_fan()
-        
-      elif hum >= 60 and window_open == False:
-        print("Høj fugtighed, åbner vindue.")
-        open_window()
-            
-      elif hum < 60 and temp < 30 and fan_on == True and window_open == True:
-        print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
-        close_window()
-        turn_off_fan()
-        
-      elif temp < 24 and fan_on == True:
+    elif temp < 24 and fan_on == True:
         print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan()
-        
-      elif hum < 60 and window_open == True:
+
+    # --- Vindue kontrol ---
+    if hum >= 60 and window_open == False:
+        print("Høj fugtighed, åbner vindue.")
+        open_window()
+    elif hum < 60 and window_open == True:
         print("Acceptabel luftfugtighed opnået, lukker vindue.")
         close_window()
-        
-      else:
-        print("Der opstod en fejl.")
+
+    # --- Status Besked ---
+    if fan_on == False and window_open == False and temp < 24 and hum < 60:
+        print("Forhold er optimale, ingen handling påkrævet.")
       
 # Jeg har forsøgt at planlægge fremad ift. at der stadig er noget kode vi mangler - som f.eks. Yolo og kamera.
 # Derfor har jeg sørget for, at alle kommentarer efter dette punkt som har 3 hashtags i starten, refererer til
