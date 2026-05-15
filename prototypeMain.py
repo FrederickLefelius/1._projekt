@@ -23,6 +23,8 @@ try:
     
     # Indsæt flask-kode imellem disse 2 kommentarer - skal måske op under do_connect()
     hum, temp = get_humTemp()
+    hum = int(hum)
+    temp = int(temp)
     
     if smoke_detected == True:
       print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
@@ -34,6 +36,9 @@ try:
         print("Abnormale forhold, åbner vindue og tænder blæser.")
         open_window()
         turn_on_fan()
+        
+      elif temp >= 24:
+        print("Høj temperatur, ")
         
       elif hum >= 60:
         print("Høj fugtighed, åbner vindue.")
