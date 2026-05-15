@@ -96,7 +96,7 @@ while True:
             print("For varmt, starter blæser")
             turn_on_fan()
         
-        elif temp >= 30 && hum >= 60:
+        elif temp >= 30 and hum >= 60:
             print("Abnormale forhold, åbner vindue og tænder blæser.")
             open_window()
             turn_on_fan()
@@ -105,7 +105,7 @@ while True:
             print("Høj fugtighed, åbner vindue.")
             open_window()
             
-        elif smoke_detected = True:
+        elif smoke_detected == True:
             print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER ØJEBLIKKELIGT")
             close_window()
             turn_off_fan()
@@ -118,7 +118,7 @@ while True:
             print("Acceptabel luftfugtighed opnået, lukker vindue.")
             close_window()
             
-        elif temp < 30 && hum < 60:
+        elif temp < 30 and hum < 60:
             print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
             close_window()
             turn_off_fan()
