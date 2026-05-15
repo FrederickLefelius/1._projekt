@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import dht11
 from time import sleep
+from hum import get_humTemp
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -44,6 +45,9 @@ class Stepper:
 #Starter stepper
 stepper = Stepper(pins=[5, 17, 4, 15])
 #husk man kan skifte pins her___
+fan_pin = 9
+GPIO.setup(fan_pin, GPIO.OUT)
+GPIO.output(fan_pin, 0)
 
 def fan_setup():
     fan_pin = 9
@@ -55,73 +59,84 @@ window_open = False
 fan_on = False
 
 def open_window():
-    print("Åbner vindue")
+    #print("Åbner vindue")
     #Note Her defineres steps for motor
     #200 steps = lille åbning
     #800 steps = mellem åbning
     #2000 steps = stop åbning
     #4096 steps = fuld rotation
+    window_stop = False
     stepper.step(steps=1200, direction=1)
     stepper.stop()
     window_open = True
+    stop_window()
 
 def close_window():
-    print("Lukker vindue")
+    #print("Lukker vindue")
     stepper.step(steps=1200, direction=-1)
     stepper.stop()
     window_open = False
+    stop_window()
 
 def turn_on_fan():
-    print("Tænder blæser")
+    #print("Tænder blæser")
     GPIO.output(fan_pin, 1)
     fan_on = True
 
 def turn_off_fan():
-    print("Slukker blæser")
+    #print("Slukker blæser")
     GPIO.output(fan_pin, 0)
     fan_on = False
 
+# Skal vi bare bruge ultralydssensor???
+def stop_window():
+    #print("Stopper vindue motoren")
+    stepper.stop()
+    window_process = True
+
 sensor = dht11.DHT11(pin=6)
 
+window_process = False
 while True:
-    result = sensor.read() # Husk at vi lige skal rette navnet på variablen her, så den matcher dem der kommer fra
+    hum, temp = get_humTemp()
+    #result = humTemp.read() # Husk at vi lige skal rette navnet på variablen her, så den matcher dem der kommer fra
     # andre filer.
-    if result.is_valid():
-        temp = result.temperature
-        hum = result.humidity
-        print(f"Temperature: {temp:.1f} C")
-        print(f"Humidity: {hum:.1f} %") 
+    #if result.is_valid():
+        #temp = result.temperature
+        #hum = result.humidity
+        #print(f"Temperature: {temp:.1f} C")
+        #print(f"Humidity: {hum:.1f} %") 
         
-        if temp > 24: #or hum > 60:
-            print("For varmt, starter blæser")
-            turn_on_fan()
-        
-        elif temp >= 30 and hum >= 60:
-            print("Abnormale forhold, åbner vindue og tænder blæser.")
-            open_window()
-            turn_on_fan()
-            
-        elif hum >= 60:
-            print("Høj fugtighed, åbner vindue.")
-            open_window()
-            
-        elif smoke_detected == True:
-            print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER ØJEBLIKKELIGT")
-            close_window()
-            turn_off_fan()
-            
-        elif temp < 24:
-            print("Acceptabel temperatur opnået, slukker blæser.")
-            turn_off_fan()
-            
-        elif hum < 60:
-            print("Acceptabel luftfugtighed opnået, lukker vindue.")
-            close_window()
-            
-        elif temp < 30 and hum < 60:
-            print("Abnormale forhold afsluttet, lukker vindue og slukker blæser.")
-            close_window()
-            turn_off_fan()
+        #if smoke_detected == True:
+            #print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+            #close_window()
+            #turn_off_fan()
+    #else:
+    # Blæser kontrol
+    if temp > 25 and fan_on == False:
+        print("Høj temperatur, tænder blæser.")
+        turn_on_fan()
+    if temp < 25 and window_open == True:
+        print("Temperatur acceptabel, slukker blæser.")
+        turn_off_fan()
+        sleep(2)
+    # Vindue kontrol
+    if hum >= 60 and window_open == False:
+        print("Høj fugtighed, åbner vindue.")
+        open_window()
+        sleep(3)
+    elif window_open == True and hum < 60:
+        print("Acceptabel luftfugtighed opnået, lukker vindue.")
+        close_window()
+        sleep(3)
+        stop_window()
+
+    # Status Besked
+    if temp <= 25 and window_process == True and hum < 60:
+        print("Forhold er optimale, ingen handling påkrævet - stopper blæser og vinduekontrol.")
+        turn_off_fan()
+        sleep(2)
     else:
-        print("Sensorfejl:", result.error_code)
-    sleep(2)
+        #print("Sensorfejl:", result.error_code)
+        sleep(2)
+sleep(2)
