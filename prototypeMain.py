@@ -3,6 +3,7 @@ from humTemp import get_humTemp
 from netConnect import do_connect
 from pirsensor import pir_setup, read_pir
 from time import sleep, time
+from camera import Camera
 import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
