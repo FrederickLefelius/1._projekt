@@ -15,6 +15,7 @@ smoke_detected = None
 horse_down_counter = 0
 horse_was_laying = False
 camera_active = False
+
 motion_timer = None
 
 try:
