@@ -42,11 +42,11 @@ class Stepper:
             GPIO.output(p, 0)
 
 #Starter stepper
-stepper = Stepper(pins=[18, 17, 16, 19])
+stepper = Stepper(pins=[5, 17, 4, 15])
 #husk man kan skifte pins her___
 
 def fan_setup():
-    fan_pin = 23
+    fan_pin = 9
     GPIO.setup(fan_pin, GPIO.OUT)
     GPIO.output(fan_pin, 0)
 
@@ -81,7 +81,7 @@ def turn_off_fan():
     GPIO.output(fan_pin, 0)
     fan_on = False
 
-sensor = dht11.DHT11(pin=14)
+sensor = dht11.DHT11(pin=6)
 
 while True:
     result = sensor.read() # Husk at vi lige skal rette navnet på variablen her, så den matcher dem der kommer fra
