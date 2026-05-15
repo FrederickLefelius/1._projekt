@@ -23,8 +23,8 @@ try:
     
     # Indsæt flask-kode imellem disse 2 kommentarer - skal måske op under do_connect()
     hum, temp = get_humTemp()
-    hum = int(hum)
-    temp = int(temp)
+    #hum = int(hum)
+    #temp = int(temp)
     
     if smoke_detected == True:
       print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
