@@ -12,7 +12,7 @@ kanal = AnalogIn(ads, ads1x15.Pin.A0)
 
 while True:
     print("Røgniveau: ", "ADC:", kanal.value,"VOLT:", kanal.voltage)
-    if kanal.value > 3000:
+    if kanal.value > 10000:
         print("Røgniveau er for højt!")
     else: 
         print("røgniveau er stabilt")
