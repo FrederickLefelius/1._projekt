@@ -3,9 +3,9 @@ from humTemp import get_humTemp
 from netConnect import do_connect
 from pirsensor import pir_setup, read_pir
 from time import sleep, time
-from camera import Camera
-from videoFeed import live_feed, kill_feed
-from yolo_functions import is_horse_laying
+from videoFeed import live_feed, kill_feed, start_feed, get_processed_frame
+from yolo_functions import is_horse_down
+from smokeADC import smoke_check
 import numpy as np
 import onnxruntime as ort
 
@@ -22,7 +22,6 @@ fan_on = False
 window_open = False
 hum, temp = get_humTemp()
 sensor_timer = time()
-camera = Camera()
 laying_frames = 0
 laying_threshold = 3  
 
@@ -42,8 +41,10 @@ try:
 
     # Indsæt flask-kode imellem disse 2 kommentarer.
 
+    smoke_check()
+
     if smoke_detected:
-      print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+      # Tænd for alarm på esp32
       close_window()
       turn_off_fan(9)
 
@@ -72,13 +73,13 @@ try:
         close_window()
         window_open = False
 
-      # --- Status
+      # Status
       if not fan_on and not window_open and temp < 24 and hum < 60:
         print("Forhold er optimale, ingen handling påkrævet.")
 
     motion = read_pir()
 
-    # Hvis ingen bevægelse opfanges - kun til sikring af kamera nedlukning
+    # Hvis ingen bevægelse opfanges - kun til sikring af kamera nedlukning.
     if not motion:
       motion_timer = None
       
@@ -94,15 +95,17 @@ try:
 
       if not camera_active:
         print("Bevægelse registreret — starter kamera.")
-        camera.start()
+        start_feed()
         camera_active = True
 
       if time() - motion_timer < 10:
-        frame = live_feed()
+        live_feed()
 
-        # Yolo aflæsning
-        frame_resized = cv2.resize(frame, (320, 320))
-        frame_resized = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
+        # Yolo aflæsning ved brug af funktion fra yoloFunctions.py.
+        frame_resized = get_processed_frame()
+
+        if frame_resized is None:
+          continue  # Spring denne iteration over og prøv igen.
 
         img = frame_resized.transpose(2, 0, 1)
         img = np.expand_dims(img, axis=0).astype(np.float32) / 255.0
