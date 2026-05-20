@@ -1,6 +1,5 @@
 from camera import Camera
 import cv2
-from time import sleep
 
 camera = Camera()
 
