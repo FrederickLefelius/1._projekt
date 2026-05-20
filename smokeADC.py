@@ -11,20 +11,11 @@ ads = ADS1115(i2c)
 kanal = AnalogIn(ads, ads1x15.Pin.A0)
 
 
-def get_smoke_adc():
+def smoke_check():
     smoke_data_adc = kanal.value
-    if kanal.value > 10000:
-        print("Røgniveau er for højt")
+    if smoke_data_adc > 10000:
+        print("ADVARSEL: RØG REGISTRERET --- LUKKER VINDUE OG SLUKKER BLÆSER!")
+        smoke_detected = True
     else:
-        print("RØGNIVEAU ADC:", kanal.value)
-        return kanal.value
-    
-
-
-
-        
-
-
-    
-
-
+        smoke_detected = False
+    return smoke_detected

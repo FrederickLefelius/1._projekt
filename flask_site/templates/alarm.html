@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 {% extends "layout.html" %}
 {% block title %}
@@ -40,4 +41,48 @@ Brandalarm
       });
   }
 </script>
+=======
+
+{% extends "layout.html" %}
+{% block title %}
+Brandalarm
+{% endblock %}
+{% block content %}
+<p>Brandalarm</p>
+ 
+<button id="alarm-btn" onclick="sendAlarm()">
+    🔥 Send alarm SMS
+</button>
+ 
+<p id="alarm-status"></p>
+ 
+<script>
+  function sendAlarm() {
+    const btn    = document.getElementById('alarm-btn');
+    const status = document.getElementById('alarm-status');
+ 
+    btn.disabled    = true;
+    status.style.color = 'black';
+    status.textContent = 'Sender...';
+ 
+    fetch('/send-alarm/', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          status.style.color = 'green';
+          status.textContent = '✅ SMS sendt!';
+        } else {
+          status.style.color = 'red';
+          status.textContent = '❌ Fejl: ' + data.error;
+          btn.disabled = false;
+        }
+      })
+      .catch(() => {
+        status.style.color = 'red';
+        status.textContent = '❌ Kunne ikke kontakte serveren.';
+        btn.disabled = false;
+      });
+  }
+</script>
+>>>>>>> fdf27f7ae133e92063dfe14a4ce68fc18fdc4830
 {% endblock %}

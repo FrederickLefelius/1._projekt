@@ -36,25 +36,25 @@ def is_horse_down(outputs):
     def angle(a, b):
         return abs(math.degrees(math.atan2(b[1]-a[1], b[0]-a[0])))
 
-    angles = [
+        angles = [
         angle(head, mid2),
         angle(mid1, mid2),
         angle(mid2, rear)
-    ]
+        ]
 
-    avg_angle = sum(angles) / len(angles)
+        avg_angle = sum(angles) / len(angles)
 
-    # classify
-    is_laying_now = (avg_angle < 35 or avg_angle > 145)
+        # classify
+        is_laying_now = (avg_angle < 35 or avg_angle > 145)
 
-    # temporal smoothing
-    pose_history.append(is_laying_now)
+        # temporal smoothing
+        pose_history.append(is_laying_now)
 
-    # require majority vote over last frames
-    if pose_history.count(True) >= 3:
-        return "laying"
-    elif pose_history.count(False) >= 3:
-        return "standing"
+        # require majority vote over last frames
+        if pose_history.count(True) >= 3:
+            return "laying"
+        elif pose_history.count(False) >= 3:
+            return "standing"
 
-    return None
-  
+        return None
+    

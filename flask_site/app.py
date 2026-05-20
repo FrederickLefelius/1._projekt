@@ -11,12 +11,16 @@ import threading
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
 socketio = SocketIO(app)
+<<<<<<< HEAD
 # Simple shared state — good enough for a single-device setup
 state = {
     "alarm":     False,   # True = alarm active, ESP32 will beep
     "battery":   None,    # Last battery % received from ESP32 (0-100)
     "last_seen": None,    # Timestamp of last ESP32 contact
 }
+=======
+
+>>>>>>> fdf27f7ae133e92063dfe14a4ce68fc18fdc4830
 
 # --- Chart helpers ---
 
@@ -56,6 +60,7 @@ def målinger():
 def brand_alarm():
     return render_template("brand_alarm.html")
 
+<<<<<<< HEAD
 @app.route("/index/")
 def index():
     return render_template("index.html")
@@ -104,6 +109,8 @@ def get_status():
         "battery": state["battery"],
         "online":  online,
     })
+=======
+>>>>>>> fdf27f7ae133e92063dfe14a4ce68fc18fdc4830
 # --- SocketIO events ---
 
 @socketio.on('connect')

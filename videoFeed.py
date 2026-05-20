@@ -4,7 +4,7 @@ import cv2
 camera = Camera()
 
 def live_feed():
-    frame = cam.get_frame()
+    frame = camera.get_frame()
 
     if frame is None:
         return None

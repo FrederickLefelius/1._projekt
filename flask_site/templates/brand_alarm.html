@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends "layout.html" %}
 {% block title %}
 Brandalarm
@@ -35,4 +36,43 @@ Brandalarm
     alert.style.display = data.alert ? 'block' : 'none';
   });
 </script>
+=======
+{% extends "layout.html" %}
+{% block title %}
+Brandalarm
+{% endblock %}
+{% block content %}
+<p>Live røgmåling</p>
+ 
+<table>
+    <tr>
+        <th>ADC Værdi</th>
+        <th>Volt</th>
+        <th>Status</th>
+    </tr>
+    <tr>
+        <td id="smoke-value">—</td>
+        <td id="smoke-volt">—</td>
+        <td id="smoke-status">—</td>
+    </tr>
+</table>
+ 
+<p id="smoke-alert" style="color: red; font-weight: bold; display: none;">
+    ⚠️ Røgniveau er for højt!
+</p>
+ 
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const socket = io();
+ 
+  socket.on('smoke_reading', (data) => {
+    document.getElementById('smoke-value').textContent  = data.value;
+    document.getElementById('smoke-volt').textContent   = data.voltage + ' V';
+    document.getElementById('smoke-status').textContent = data.status;
+ 
+    const alert = document.getElementById('smoke-alert');
+    alert.style.display = data.alert ? 'block' : 'none';
+  });
+</script>
+>>>>>>> fdf27f7ae133e92063dfe14a4ce68fc18fdc4830
 {% endblock %}
