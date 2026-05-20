@@ -13,10 +13,12 @@ kanal = AnalogIn(ads, ads1x15.Pin.A0)
 
 def get_smoke_adc():
     smoke_data_adc = kanal.value
+    print("RØGNIVEAU ADC:", kanal.value)
     return kanal.value
     
 def get_smoke_voltage():
     smoke_data_voltage = kanal.voltage
+    print("RØGNIVEAU I VOLT:", kanal.voltage)
     return kanal.voltage
 
 
