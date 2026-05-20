@@ -1,60 +1,66 @@
 import math
-import numpy as np
 from collections import deque
 
-# keeps last results for smoothing
 pose_history = deque(maxlen=5)
 
 def is_horse_down(outputs):
+
+    if outputs is None or len(outputs) == 0:
+        return None
+
     data = outputs[0]
 
-    if data is None or len(data) == 0:
+    if len(data.shape) == 3:
+        data = data[0]
+
+    if len(data) == 0:
         return None
 
     det = data[0]
 
-    keypoints = det[5:]
+    keypoints_raw = det[5:]
 
-    # need at least a few keypoints
-    if len(keypoints) < 10:
+    keypoints = [(keypoints_raw[i], keypoints_raw[i+1]) 
+                 for i in range(0, len(keypoints_raw) - 2, 3)]
+
+    if len(keypoints) < 4:
         return None
 
-    # helper: get point safely
     def pt(i):
-        return keypoints[i], keypoints[i + 1]
+        return float(keypoints[i][0]), float(keypoints[i][1])
 
-    # pick multiple body points (more stable than 2-point method)
+    def angle(a, b):
+        return abs(math.degrees(math.atan2(b[1] - a[1], b[0] - a[0])))
+
     try:
         head = pt(0)
-        mid1 = pt(len(keypoints)//4)
-        mid2 = pt(len(keypoints)//2)
-        rear = pt(3*len(keypoints)//4)
+        mid1 = pt(len(keypoints) // 4)
+        mid2 = pt(len(keypoints) // 2)
+        rear = pt(3 * len(keypoints) // 4)
     except IndexError:
         return None
 
-    # compute multiple angles
-    def angle(a, b):
-        return abs(math.degrees(math.atan2(b[1]-a[1], b[0]-a[0])))
+    if any(x == 0.0 and y == 0.0 for x, y in [head, mid1, mid2, rear]):
+        return None
 
-        angles = [
+    angles = [
         angle(head, mid2),
         angle(mid1, mid2),
         angle(mid2, rear)
-        ]
+    ]
 
-        avg_angle = sum(angles) / len(angles)
+    main_angle = angle(head, rear)
 
-        # classify
-        is_laying_now = (avg_angle < 35 or avg_angle > 145)
+    print(f"Hoved-til-bagkrop vinkel: {main_angle:.1f} grader")
 
-        # temporal smoothing
-        pose_history.append(is_laying_now)
+    is_laying_now = (main_angle < 45 or main_angle > 135)
 
-        # require majority vote over last frames
-        if pose_history.count(True) >= 3:
-            return "laying"
-        elif pose_history.count(False) >= 3:
-            return "standing"
+    pose_history.append(is_laying_now)
 
-        return None
+    if pose_history.count(True) >= 3:
+        return "laying"
+    elif pose_history.count(False) >= 3:
+        return "standing"
+
+    return None
     
