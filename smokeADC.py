@@ -3,13 +3,10 @@ import board
 import busio 
 from time import sleep 
 
-
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS1115(i2c)
 
-
 kanal = AnalogIn(ads, ads1x15.Pin.A0)
-
 
 def smoke_check():
     smoke_data_adc = kanal.value
