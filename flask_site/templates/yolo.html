@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}
+Yolo
+{% endblock %}
+{% block content %}
+<p>Live kamera</p>
+
+<img id="camera-feed" src="" alt="Camera feed" style="max-width:100%; border:1px solid #ccc;" />
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+  const socket = io();
+
+  socket.on('camera_frame', (data) => {
+    document.getElementById('camera-feed').src = 'data:image/jpeg;base64,' + data.frame;
+  });
+</script>
+{% endblock %}
