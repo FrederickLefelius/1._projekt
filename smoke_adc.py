@@ -14,7 +14,7 @@ kanal = AnalogIn(ads, ads1x15.Pin.A0)
 def get_smoke_adc():
     smoke_data_adc = kanal.value
     if kanal.value > 10000:
-        print("Røgniveau er for højt")
+        print("Røgniveau er for højt", kanal.value)
     else:
         print("RØGNIVEAU ADC:", kanal.value)
         return kanal.value
