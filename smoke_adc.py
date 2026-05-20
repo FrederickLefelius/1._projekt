@@ -19,15 +19,7 @@ def get_smoke_adc():
         print("RØGNIVEAU ADC:", kanal.value)
         return kanal.value
     
-def get_smoke_voltage():
-    smoke_data_voltage = kanal.voltage
-    if kanal.voltage > 5.0:
-        print("Røgniveau i VOLT er for høj")
-        print(kanal.voltage)
-        return kanal.voltage
-    else:
-        print("RØGNIVEAU I VOLT:", kanal.voltage)
-        return kanal.voltage
+
 
 
         
