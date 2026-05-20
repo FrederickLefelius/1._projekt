@@ -24,3 +24,4 @@ class Stepper:
     def stop(self):
         for p in self.pins:
             p.value(0)
+            
