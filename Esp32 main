@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+#
+# main.py — Smoke Alarm System
+
+import urequests
+import ujson
+import machine
+import time
+
+import secrets
+SERVER_URL = secrets.SERVER_URL
+
+# ── Pin setup ─────────────────────────────────────────────
+buzzer = machine.Pin(5, machine.Pin.OUT)
+adc    = machine.ADC(machine.Pin(34))
