@@ -6,7 +6,6 @@ from time import sleep, time
 from camera import Camera
 from videoFeed import live_feed, kill_feed
 from yolo_functions import is_horse_laying
-import cv2
 import numpy as np
 import onnxruntime as ort
 
