@@ -1,17 +1,17 @@
 from motor import open_window, close_window, turn_on_fan, turn_off_fan, fan_setup, janitor
 from humTemp import get_humTemp
-from netConnect import do_connect
-from pirsensor import pir_setup, read_pir
+from pirSensor import pir_setup, read_pir
 from time import sleep, time
-from videoFeed import live_feed, kill_feed, start_feed, get_processed_frame
-from yolo_functions import is_horse_down
+from videoFeed import live_feed, kill_feed, start_feed, get_processed_frame, close_camera
+from yoloFunctions import is_horse_down
 from smokeADC import smoke_check
+from db import insert_sensor_reading, insert_smoke_reading
+import os
 import numpy as np
 import onnxruntime as ort
 
 pir_setup()
 fan_setup(9)
-do_connect()
 smoke_detected = None
 
 horse_down_counter = 0
@@ -20,10 +20,26 @@ camera_active = False
 motion_timer = None
 fan_on = False
 window_open = False
-hum, temp = get_humTemp()
+hum = 0
+temp = 0
 sensor_timer = time()
 laying_frames = 0
 laying_threshold = 3  
+smoke_timer = time()
+
+# Printer kun fejl beskeder fra libcamera, så terminalen ikke bliver spammet. 
+os.environ["LIBCAMERA_LOG_LEVELS"] = "ERROR"       
+
+_last_msg = None
+_last_msg_time = 0
+
+# Printer kun hvis beskeden er ny, eller hvis 30 minutter er gået siden sidst.
+def smart_print(msg):
+  global _last_msg, _last_msg_time
+  if msg != _last_msg or time() - _last_msg_time > 1800:
+    print(msg)
+    _last_msg = msg
+    _last_msg_time = time()
 
 # Yolo setup, vi skal bruge onnx for bedste perfomance uden at brænda pi'en af.
 yolo_session = ort.InferenceSession(
@@ -36,57 +52,65 @@ output_names = [o.name for o in yolo_session.get_outputs()]
 
 try:
   while True:
-
-    # Indsæt flask-kode imellem disse 2 kommentarer.
-
-    # Indsæt flask-kode imellem disse 2 kommentarer.
-
-    smoke_check()
+    if time() - smoke_timer > 60:
+      smoke_detected = smoke_check()
 
     if smoke_detected:
-      # Tænd for alarm på esp32
+      # Tænd for alarm på esp32 kode her.
       close_window()
       turn_off_fan(9)
+    
+      # Sender seneste røgsensor data til database på flask server seperat.
+      insert_smoke_reading(smoke_detected)
 
     else:
       if time() - sensor_timer > 1800:
-        hum, temp = get_humTemp()
+        new_hum, new_temp = get_humTemp()
         sensor_timer = time()
 
-      # --- Blæser kontrol
+        if new_hum is not None and new_temp is not None:
+          hum, temp = new_hum, new_temp
+        else:
+          smart_print("Sensoraflæsning fejlede, beholder tidligere værdier.")
+
+        # Send seneste værdier fra alle sensorer til databasen.
+        insert_sensor_reading(hum, temp, fan_on, window_open, horse_down_counter)
+        insert_smoke_reading(smoke_detected)
+
+      # Blæser kontrol.
       if temp >= 24 and not fan_on:
-        print("Høj temperatur, tænder blæser.")
+        smart_print("Høj temperatur, tænder blæser.")
         turn_on_fan(9)
         fan_on = True
       elif temp < 24 and fan_on:
-        print("Temperatur acceptabel, slukker blæser.")
+        smart_print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan(9)
         fan_on = False
 
-      # --- Vindue kontrol
+      # Vindue kontrol.
       if hum >= 60 and not window_open:
-        print("Høj fugtighed, åbner vindue.")
+        smart_print("Høj fugtighed, åbner vindue.")
         open_window()
         window_open = True
       elif hum < 60 and window_open:
-        print("Acceptabel luftfugtighed opnået, lukker vindue.")
+        smart_print("Acceptabel luftfugtighed opnået, lukker vindue.")
         close_window()
         window_open = False
 
-      # Status
+      # Hvis alle forhold er gode.
       if not fan_on and not window_open and temp < 24 and hum < 60:
-        print("Forhold er optimale, ingen handling påkrævet.")
+        smart_print("Forhold er optimale, ingen handling påkrævet.")
 
     motion = read_pir()
 
     # Hvis ingen bevægelse opfanges - kun til sikring af kamera nedlukning.
     if not motion:
-      motion_timer = None
-      
       if camera_active:
-        print("Ingen bevægelse — slukker kamera.")
-        kill_feed()
-        camera_active = False
+        if time() - motion_timer > 60:  # Kun sluk hvis 60 sekunder uden bevægelse er gået.
+          smart_print("Ingen bevægelse i 1 minut — slukker kamera.")
+          kill_feed()
+          camera_active = False
+          motion_timer = None
 
     # Hvis bevægelse opfanges.
     else:
@@ -94,12 +118,11 @@ try:
         motion_timer = time()
 
       if not camera_active:
-        print("Bevægelse registreret — starter kamera.")
+        smart_print("Bevægelse registreret — starter kamera.")
         start_feed()
         camera_active = True
 
-      if time() - motion_timer < 10:
-        live_feed()
+      if time() - motion_timer < 60:
 
         # Yolo aflæsning ved brug af funktion fra yoloFunctions.py.
         frame_resized = get_processed_frame()
@@ -113,7 +136,11 @@ try:
         outputs = yolo_session.run(output_names, {input_name: img})
         yolo_result = is_horse_down(outputs)
 
+        if yolo_result is None:
+          continue
+
         if yolo_result == "laying":
+          smart_print("YOLO resultat: Hesten ligger ned.")
           laying_frames += 1
 
           if laying_frames >= laying_threshold:
@@ -121,12 +148,16 @@ try:
               horse_down_counter += 1
               horse_was_laying = True
 
-        else:
+        elif yolo_result == "standing":
+          smart_print("YOLO resultat: Hesten står op.")
           laying_frames = 0
           horse_was_laying = False
 
+        else:
+          smart_print("YOLO resultat: Ingen konklusion endnu (for få frames).")
+
       else:
-        print("Ingen bevægelse i 10 sekunder — slukker kamera.")
+        smart_print("Ingen bevægelse i 1 minut — slukker kamera.")
         kill_feed()
         camera_active = False
         motion_timer = None
@@ -137,4 +168,6 @@ except KeyboardInterrupt:
 except Exception as e:
   print(f"Der opstod en fejl: {e}")
 finally:
-  janitor()
+    if camera_active:
+        close_camera()
+    janitor()
