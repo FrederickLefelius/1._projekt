@@ -55,15 +55,14 @@ def get_battery_percent():
 
 def get_alarm_state():
     try:
-        r    = urequests.get(SERVER_URL + "/api/alarm", headers=HEADERS)
+        r    = urequests.get("http://192.168.0.33:5000" + "/api/status", headers=HEADERS)  # ← /api/status instead of /api/alarm
         text = r.text
         r.close()
         data = ujson.loads(text)
-        return bool(data.get("alarm", False))
+        return bool(data.get("smoke_detected", False))  # ← use smoke_detected field
     except Exception as e:
-        print("GET /api/alarm error:", e)
+        print("GET /api/status error:", e)
         return alarm_on
-
 
 def send_battery(percent):
     try:
