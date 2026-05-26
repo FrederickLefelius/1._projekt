@@ -5,7 +5,7 @@ from time import sleep, time
 from videoFeed import live_feed, kill_feed, start_feed, get_processed_frame, close_camera
 from yoloFunctions import is_horse_down
 from smokeADC import smoke_check
-from db import insert_sensor_reading, insert_smoke_reading
+from db import insert_sensor_reading, insert_sensor_reading_async ####
 import os
 import numpy as np
 import onnxruntime as ort
@@ -24,11 +24,11 @@ hum = 0
 temp = 0
 sensor_timer = time()
 laying_frames = 0
-laying_threshold = 3  
+laying_threshold = 3
 smoke_timer = time()
 
-# Printer kun fejl beskeder fra libcamera, så terminalen ikke bliver spammet. 
-os.environ["LIBCAMERA_LOG_LEVELS"] = "ERROR"       
+# Printer kun fejl beskeder fra libcamera, så terminalen ikke bliver spammet.
+os.environ["LIBCAMERA_LOG_LEVELS"] = "ERROR"
 
 _last_msg = None
 _last_msg_time = 0
@@ -52,19 +52,17 @@ output_names = [o.name for o in yolo_session.get_outputs()]
 
 try:
   while True:
-    if time() - smoke_timer > 60:
+    if time() - smoke_timer > 30:
       smoke_detected = smoke_check()
+      smoke_timer = time()
 
     if smoke_detected:
-      # Tænd for alarm på esp32 kode her.
       close_window()
       turn_off_fan(9)
-    
-      # Sender seneste røgsensor data til database på flask server seperat.
-      insert_smoke_reading(smoke_detected)
+      insert_sensor_reading_async(hum, temp, fan_on, window_open, smoke_detected, horse_down_counter)
 
     else:
-      if time() - sensor_timer > 1800:
+      if time() - sensor_timer > 10:
         new_hum, new_temp = get_humTemp()
         sensor_timer = time()
 
@@ -73,16 +71,14 @@ try:
         else:
           smart_print("Sensoraflæsning fejlede, beholder tidligere værdier.")
 
-        # Send seneste værdier fra alle sensorer til databasen.
-        insert_sensor_reading(hum, temp, fan_on, window_open, horse_down_counter)
-        insert_smoke_reading(smoke_detected)
+        insert_sensor_reading_async(hum, temp, fan_on, window_open, smoke_detected, horse_down_counter)
 
       # Blæser kontrol.
-      if temp >= 24 and not fan_on:
+      if temp >= 25 and not fan_on:
         smart_print("Høj temperatur, tænder blæser.")
         turn_on_fan(9)
         fan_on = True
-      elif temp < 24 and fan_on:
+      elif temp < 25 and fan_on:
         smart_print("Temperatur acceptabel, slukker blæser.")
         turn_off_fan(9)
         fan_on = False
@@ -98,7 +94,7 @@ try:
         window_open = False
 
       # Hvis alle forhold er gode.
-      if not fan_on and not window_open and temp < 24 and hum < 60:
+      if not fan_on and not window_open and temp < 25 and hum < 60:
         smart_print("Forhold er optimale, ingen handling påkrævet.")
 
     motion = read_pir()
@@ -106,7 +102,7 @@ try:
     # Hvis ingen bevægelse opfanges - kun til sikring af kamera nedlukning.
     if not motion:
       if camera_active:
-        if time() - motion_timer > 60:  # Kun sluk hvis 60 sekunder uden bevægelse er gået.
+        if time() - motion_timer > 60:
           smart_print("Ingen bevægelse i 1 minut — slukker kamera.")
           kill_feed()
           camera_active = False
@@ -128,7 +124,7 @@ try:
         frame_resized = get_processed_frame()
 
         if frame_resized is None:
-          continue  # Spring denne iteration over og prøv igen.
+          continue
 
         img = frame_resized.transpose(2, 0, 1)
         img = np.expand_dims(img, axis=0).astype(np.float32) / 255.0
