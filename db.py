@@ -8,7 +8,6 @@ DB_USER = "vanaguard" # Mysql login.
 DB_PASS = "gruppe7!"
 
 DB_NAME = "heste_data"
-import threading
 
 def insert_sensor_reading_async(hum, temp, fan_on, window_open, smoke_detected, horse_down_counter):
     t = threading.Thread(target=insert_sensor_reading, args=(hum, temp, fan_on, window_open, smoke_detected, horse_down_counter))
